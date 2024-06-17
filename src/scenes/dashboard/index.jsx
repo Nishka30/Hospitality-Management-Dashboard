@@ -223,7 +223,7 @@ const Dashboard = () => {
           p="20px"
         >
           <Typography variant="h5" fontWeight="600" mb="10px">
-            Line Chart Analysis
+            Guest Activities
           </Typography>
           <Box height="250px" mt="-20px">
             <LineChart isDashboard={true} />
