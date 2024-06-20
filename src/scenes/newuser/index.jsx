@@ -2,14 +2,20 @@ import { Box, Button, TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import axios from "axios";
 import Header from "../../components/Header";
 
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
   const handleFormSubmit = (values) => {
-    console.log(values);
-    // Handle form submission logic here
+    axios.post('http://localhost:5000/api/customers', values)
+      .then(response => {
+        alert('Customer profile saved successfully');
+      })
+      .catch(error => {
+        alert('Error saving customer profile: ' + error.message);
+      });
   };
 
   // Validation schema using yup
