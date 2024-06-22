@@ -31,6 +31,7 @@ const validationSchema = yup.object().shape({
   checkoutDate: yup.date().required('Required'),
   checkinTime: yup.string().required('Required'),
   checkoutTime: yup.string().required('Required'),
+  roomNumber: yup.number().required('Required'),
 });
 
 // Array of room types with corresponding room number ranges
@@ -228,6 +229,31 @@ const FrontDesk = () => {
     return `${roomType.range.start} to ${roomType.range.end}`;
   };
 
+  // Function to generate date headers for the table
+  const generateDateHeaders = () => {
+    const currentDate = new Date();
+    const headers = [];
+    for (let i = -9; i <= 10; i++) {
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() + i);
+      headers.push(
+        <TableCell
+          key={`date-header-${i}`}
+          align="center"
+          style={{
+            backgroundColor: '#f0f0f0',
+            color: '#000000',
+            padding: '10px',
+            borderRight: i < 10 ? '1px solid #e0e0e0' : 'none', // Add border to all but last header cell
+          }}
+        >
+          {date.toLocaleDateString()} {/* Adjust date formatting as needed */}
+        </TableCell>
+      );
+    }
+    return headers;
+  };
+
   return (
     <Box m="20px" display="grid" gridGap="20px" gridTemplateColumns="1fr 1fr">
       <Box>
@@ -328,6 +354,19 @@ const FrontDesk = () => {
                   <TextField
                     fullWidth
                     variant="filled"
+                    type="number"
+                    label="Room Number"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.roomNumber}
+                    name="roomNumber"
+                    error={!!touched.roomNumber && !!errors.roomNumber}
+                    helperText={touched.roomNumber && errors.roomNumber}
+                    sx={{ marginBottom: '10px' }}
+                  />
+                  <TextField
+                    fullWidth
+                    variant="filled"
                     type="date"
                     label="Check-in Date"
                     InputLabelProps={{ shrink: true }}
@@ -397,31 +436,6 @@ const FrontDesk = () => {
       )}
     </Box>
   );
-};
-
-// Function to generate date headers for the table
-const generateDateHeaders = () => {
-  const currentDate = new Date();
-  const headers = [];
-  for (let i = -9; i <= 10; i++) {
-    const date = new Date(currentDate);
-    date.setDate(date.getDate() + i);
-    headers.push(
-      <TableCell
-        key={`date-header-${i}`}
-        align="center"
-        style={{
-          backgroundColor: '#f0f0f0',
-          color: '#000000',
-          padding: '10px',
-          borderRight: i < 10 ? '1px solid #e0e0e0' : 'none', // Add border to all but last header cell
-        }}
-      >
-        {date.toLocaleDateString()} {/* Adjust date formatting as needed */}
-      </TableCell>
-    );
-  }
-  return headers;
 };
 
 export default FrontDesk;
