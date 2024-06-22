@@ -66,6 +66,21 @@ app.get('/api/customers', async (req, res) => {
   }
 });
 
+// API endpoint to update customer details
+app.put('/api/customers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedCustomer = await Customer.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!updatedCustomer) {
+      return res.status(404).send('Customer not found');
+    }
+    res.json(updatedCustomer);
+  } catch (error) {
+    console.error('Error updating customer profile:', error.message);
+    res.status(400).send('Error updating customer profile: ' + error.message);
+  }
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
