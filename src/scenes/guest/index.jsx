@@ -10,7 +10,7 @@ const Guests = () => {
   useEffect(() => {
     const fetchGuests = async () => {
       try {
-        const response = await axios.get('/api/customers'); // Adjust URL as needed
+        const response = await axios.get('http://localhost:5000/api/customers');
         setGuests(response.data);
       } catch (error) {
         console.error('Error fetching guests:', error);
@@ -43,6 +43,7 @@ const Guests = () => {
           rows={guests}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
+          getRowId={(row) => row._id}
         />
       </Box>
     </Box>

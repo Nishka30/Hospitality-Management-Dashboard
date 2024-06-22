@@ -176,6 +176,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item
+              title="Frontdesk"
+              to="/frontdesk"
+              icon={<HomeOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
             <Typography
               variant="h6"

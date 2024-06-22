@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, MenuItem } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -33,6 +33,9 @@ const Form = () => {
     checkinDate: yup.date().required("Required"),
     checkoutDate: yup.date().required("Required"),
     roomNumber: yup.string().required("Required"),
+    roomType: yup.string().required("Required"),
+    checkinTime: yup.string().required("Required"),
+    checkoutTime: yup.string().required("Required"),
     mode: yup.string().required("Required"),
     idType: yup.string().required("Required"),
     idValidationStatus: yup.string().required("Required"),
@@ -52,6 +55,9 @@ const Form = () => {
     checkinDate: "",
     checkoutDate: "",
     roomNumber: "",
+    roomType: "",
+    checkinTime: "",
+    checkoutTime: "",
     mode: "",
     idType: "",
     idValidationStatus: "",
@@ -171,6 +177,34 @@ const Form = () => {
               <TextField
                 fullWidth
                 variant="filled"
+                type="time"
+                label="Check-in Time"
+                InputLabelProps={{ shrink: true }}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.checkinTime}
+                name="checkinTime"
+                error={!!touched.checkinTime && !!errors.checkinTime}
+                helperText={touched.checkinTime && errors.checkinTime}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="time"
+                label="Checkout Time"
+                InputLabelProps={{ shrink: true }}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.checkoutTime}
+                name="checkoutTime"
+                error={!!touched.checkoutTime && !!errors.checkoutTime}
+                helperText={touched.checkoutTime && errors.checkoutTime}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
                 type="text"
                 label="Room Number"
                 onBlur={handleBlur}
@@ -181,6 +215,25 @@ const Form = () => {
                 helperText={touched.roomNumber && errors.roomNumber}
                 sx={{ gridColumn: "span 4" }}
               />
+              <TextField
+                fullWidth
+                variant="filled"
+                select
+                label="Room Type"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.roomType}
+                name="roomType"
+                error={!!touched.roomType && !!errors.roomType}
+                helperText={touched.roomType && errors.roomType}
+                SelectProps={{ native: true }}
+                sx={{ gridColumn: "span 4" }}
+              >
+                <option value="">Select Room Type</option>
+                <option value="Standard">Standard</option>
+                <option value="Deluxe">Deluxe</option>
+                <option value="Superior">Superior</option>
+              </TextField>
               <TextField
                 fullWidth
                 variant="filled"

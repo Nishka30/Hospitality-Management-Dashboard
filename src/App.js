@@ -18,8 +18,7 @@ import Calendar from "./scenes/calendar/calendar";
 import Guests from "./scenes/guest";
 import Rooms from "./scenes/rooms";
 import NewUser from "./scenes/newuser";
-
-
+import FrontDesk from "./scenes/frontdesk";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
@@ -42,6 +41,7 @@ function App() {
               <Route path="/form" element={<Form />} />
               {/* <Route path="/bar" element={<Bar />} /> */}
               <Route path="/pie" element={<Pie />} />
+              <Route path="/frontdesk" element={<FrontDesk />} />
               <Route path="/newuser" element={<NewUser />} />
               <Route path="/line" element={<Line />} />
               <Route path="/faq" element={<FAQ />} />
