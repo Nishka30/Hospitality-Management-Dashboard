@@ -9,12 +9,13 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
   const handleFormSubmit = (values) => {
-    axios.post('http://localhost:5000/api/customers', values)
-      .then(response => {
-        alert('Customer profile saved successfully');
+    axios
+      .post("http://localhost:5000/api/customers", values)
+      .then((response) => {
+        alert("Customer profile saved successfully");
       })
-      .catch(error => {
-        alert('Error saving customer profile: ' + error.message);
+      .catch((error) => {
+        alert("Error saving customer profile: " + error.message);
       });
   };
 
@@ -25,10 +26,7 @@ const Form = () => {
     email: yup.string().email("Invalid email format").required("Required"),
     mobile: yup
       .string()
-      .matches(
-        /^[0-9]{10}$/,
-        "Mobile number must be exactly 10 digits"
-      )
+      .matches(/^[0-9]{10}$/, "Mobile number must be exactly 10 digits")
       .required("Required"),
     checkinDate: yup.date().required("Required"),
     checkoutDate: yup.date().required("Required"),
@@ -68,9 +66,20 @@ const Form = () => {
     idNumber: "",
   };
 
+  // Simulated room data based on room types
+  const roomData = {
+    Standard: Array.from({ length: 15 }, (_, i) => (i + 101).toString()),
+    Deluxe: Array.from({ length: 15 }, (_, i) => (i + 116).toString()),
+    Superior: Array.from({ length: 10 }, (_, i) => (i + 131).toString()),
+  };
+  
+
   return (
     <Box m="20px">
-      <Header title="NEW CUSTOMER CHECK-IN" subtitle="Enter Customer Details" />
+      <Header
+        title="NEW CUSTOMER CHECK-IN"
+        subtitle="Enter Customer Details"
+      />
 
       <Formik
         initialValues={initialValues}
@@ -84,6 +93,7 @@ const Form = () => {
           handleBlur,
           handleChange,
           handleSubmit,
+          setFieldValue, // To dynamically update form values
         }) => (
           <form onSubmit={handleSubmit}>
             <Box
@@ -94,6 +104,53 @@ const Form = () => {
                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
               }}
             >
+              <TextField
+                fullWidth
+                variant="filled"
+                select
+                label="Room Type"
+                onBlur={handleBlur}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldValue("roomNumber", ""); // Reset room number when room type changes
+                }}
+                value={values.roomType}
+                name="roomType"
+                error={!!touched.roomType && !!errors.roomType}
+                helperText={touched.roomType && errors.roomType}
+                SelectProps={{ native: true }}
+                sx={{ gridColumn: "span 4" }}
+              >
+                <option value="">Select Room Type</option>
+                <option value="Standard">Standard</option>
+                <option value="Deluxe">Deluxe</option>
+                <option value="Superior">Superior</option>
+              </TextField>
+
+              <TextField
+                fullWidth
+                variant="filled"
+                select
+                label="Room Number"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.roomNumber}
+                name="roomNumber"
+                error={!!touched.roomNumber && !!errors.roomNumber}
+                helperText={touched.roomNumber && errors.roomNumber}
+                disabled={!values.roomType} // Disable until room type is selected
+                SelectProps={{ native: true }}
+                sx={{ gridColumn: "span 4" }}
+              >
+                <option value="">Select Room Number</option>
+                {roomData[values.roomType]?.map((roomNumber) => (
+                  <option key={roomNumber} value={roomNumber}>
+                    {roomNumber}
+                  </option>
+                ))}
+              </TextField>
+
+              {/* Other form fields */}
               <TextField
                 fullWidth
                 variant="filled"
@@ -206,57 +263,6 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Room Number"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.roomNumber}
-                name="roomNumber"
-                error={!!touched.roomNumber && !!errors.roomNumber}
-                helperText={touched.roomNumber && errors.roomNumber}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                select
-                label="Room Type"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.roomType}
-                name="roomType"
-                error={!!touched.roomType && !!errors.roomType}
-                helperText={touched.roomType && errors.roomType}
-                SelectProps={{ native: true }}
-                sx={{ gridColumn: "span 4" }}
-              >
-                <option value="">Select Room Type</option>
-                <option value="Standard">Standard</option>
-                <option value="Deluxe">Deluxe</option>
-                <option value="Superior">Superior</option>
-              </TextField>
-              <TextField
-                fullWidth
-                variant="filled"
-                select
-                label="Mode"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.mode}
-                name="mode"
-                error={!!touched.mode && !!errors.mode}
-                helperText={touched.mode && errors.mode}
-                SelectProps={{ native: true }}
-                sx={{ gridColumn: "span 4" }}
-              >
-                <option value="">Select Mode</option>
-                <option value="QR">QR</option>
-                <option value="Web">Web</option>
-                <option value="Direct">Direct</option>
-              </TextField>
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
                 label="ID Type"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -293,15 +299,15 @@ const Form = () => {
                 SelectProps={{ native: true }}
                 sx={{ gridColumn: "span 4" }}
               >
-                <option value="">Select Validation Status</option>
-                <option value="Success">Success</option>
-                <option value="Failed">Failed</option>
+                <option value="">Select ID Validation Status</option>
+                <option value="Valid">Valid</option>
+                <option value="Invalid">Invalid</option>
               </TextField>
               <TextField
                 fullWidth
                 variant="filled"
                 select
-                label="Checkin Status"
+                label="Check-in Status"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.checkinStatus}
@@ -311,16 +317,14 @@ const Form = () => {
                 SelectProps={{ native: true }}
                 sx={{ gridColumn: "span 4" }}
               >
-                <option value="">Select Checkin Status</option>
-                <option value="Check-in Link Clicked">Check-in Link Clicked</option>
-                <option value="Form submitted">Form submitted</option>
-                <option value="Ready for Check-in">Ready for Check-in</option>
-                <option value="PMS Checked-in">PMS Checked-in</option>
+                <option value="">Select Check-in Status</option>
+                <option value="Checked-in">Checked-in</option>
+                <option value="Not checked-in">Not checked-in</option>
               </TextField>
               <TextField
                 fullWidth
                 variant="filled"
-                type="text"
+                select
                 label="Room Alloted"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -328,13 +332,36 @@ const Form = () => {
                 name="roomAlloted"
                 error={!!touched.roomAlloted && !!errors.roomAlloted}
                 helperText={touched.roomAlloted && errors.roomAlloted}
+                SelectProps={{ native: true }}
                 sx={{ gridColumn: "span 4" }}
-              />
+              >
+                <option value="">Select Room Alloted</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </TextField>
+              <TextField
+                fullWidth
+                variant="filled"
+                select
+                label="Mode"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.mode}
+                name="mode"
+                error={!!touched.mode && !!errors.mode}
+                helperText={touched.mode && errors.mode}
+                SelectProps={{ native: true }}
+                sx={{ gridColumn: "span 4" }}
+              >
+                <option value="">Select Mode</option>
+                <option value="Online">Online</option>
+                <option value="Offline">Offline</option>
+              </TextField>
               <TextField
                 fullWidth
                 variant="filled"
                 type="date"
-                label="OMS Check-in"
+                label="OMS Checkin"
                 InputLabelProps={{ shrink: true }}
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -359,8 +386,14 @@ const Form = () => {
                 sx={{ gridColumn: "span 2" }}
               />
             </Box>
+
             <Box display="flex" justifyContent="end" mt="20px">
-              <Button type="submit" color="secondary" variant="contained">
+              <Button
+                type="submit"
+                color="secondary"
+                variant="contained"
+                disabled={Object.keys(errors).length !== 0} // Disable button if there are validation errors
+              >
                 Create New Customer
               </Button>
             </Box>

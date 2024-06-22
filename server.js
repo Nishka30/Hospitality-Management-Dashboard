@@ -28,9 +28,9 @@ const customerSchema = new mongoose.Schema({
   checkinDate: Date,
   checkoutDate: Date,
   roomNumber: String,
-  roomType: String,        // New field
-  checkinTime: String,     // New field
-  checkoutTime: String,    // New field
+  roomType: String,
+  checkinTime: String,
+  checkoutTime: String,
   mode: String,
   idType: String,
   idValidationStatus: String,
@@ -44,11 +44,15 @@ const customerSchema = new mongoose.Schema({
 const Customer = mongoose.model('Customer', customerSchema);
 
 // API endpoint to handle form submission
-app.post('/api/customers', (req, res) => {
-  const newCustomer = new Customer(req.body);
-  newCustomer.save()
-    .then(() => res.status(201).send('Customer profile saved successfully'))
-    .catch(err => res.status(400).send('Error saving customer profile: ' + err));
+app.post('/api/customers', async (req, res) => {
+  try {
+    const newCustomer = new Customer(req.body);
+    await newCustomer.save();
+    res.status(201).send('Customer profile saved successfully');
+  } catch (error) {
+    console.error('Error saving customer profile:', error.message);
+    res.status(400).send('Error saving customer profile: ' + error.message);
+  }
 });
 
 // API endpoint to fetch customers
