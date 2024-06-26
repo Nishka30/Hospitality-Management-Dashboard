@@ -272,13 +272,48 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="FAQ Page"
-              to="/faq"
-              icon={<HelpOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+
+            <SubMenu
+              title={
+                <Typography variant="h6" color={"black"}>
+                  Resources
+                </Typography>
+              }
+              icon={<HelpOutlineOutlinedIcon style={{ color: 'black' }} />}
+              selected={selected.startsWith("Resources")}
+              isOpen={selected.startsWith("Resources")}
+              onClick={() => setSelected("Resources")}
+            >
+               <SubItem
+                title="Documentation"
+                to="/documentation"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "Onboarding"}
+              />
+              <SubItem
+                title="FAQ"
+                to="/faq"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "FAQ"}
+              />
+              <SubItem
+                title="Onboarding & Training"
+                to="/onboarding"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "Onboarding"}
+              />
+               <SubItem
+                title="Tutorials"
+                to="/tutorials"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "Onboarding"}
+              />
+              
+            </SubMenu>
 
             <Typography
               variant="h6"
