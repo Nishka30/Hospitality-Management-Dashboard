@@ -1,8 +1,10 @@
+// Import necessary modules
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+// Initialize express app
 const app = express();
 const port = 5000;
 
@@ -11,7 +13,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/customerCheckin', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/customerCheckin', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -78,6 +83,18 @@ app.put('/api/customers/:id', async (req, res) => {
   } catch (error) {
     console.error('Error updating customer profile:', error.message);
     res.status(400).send('Error updating customer profile: ' + error.message);
+  }
+});
+
+// API endpoint to handle room bookings
+app.post('/api/bookings', async (req, res) => {
+  try {
+    const newBooking = new Customer(req.body);
+    await newBooking.save();
+    res.status(201).send('Room booked successfully');
+  } catch (error) {
+    console.error('Error booking room:', error.message);
+    res.status(400).send('Error booking room: ' + error.message);
   }
 });
 

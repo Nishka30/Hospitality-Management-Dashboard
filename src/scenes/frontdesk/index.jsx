@@ -17,16 +17,13 @@ import {
 import axios from 'axios';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { constrainPoint } from '@fullcalendar/core';
 
-// Validation schema using Yup
 const validationSchema = yup.object().shape({
   firstName: yup.string().required('Required'),
   lastName: yup.string().required('Required'),
   email: yup.string().email('Invalid email format').required('Required'),
-  mobile: yup
-    .string()
-    .matches(/^[0-9]{10}$/, 'Mobile number must be exactly 10 digits')
-    .required('Required'),
+  mobile: yup.string().matches(/^[0-9]{10}$/, 'Mobile number must be exactly 10 digits').required('Required'),
   checkinDate: yup.date().required('Required'),
   checkoutDate: yup.date().required('Required'),
   checkinTime: yup.string().required('Required'),
@@ -34,7 +31,6 @@ const validationSchema = yup.object().shape({
   roomNumber: yup.number().required('Required'),
 });
 
-// Array of room types with corresponding room number ranges
 const roomTypes = [
   { type: 'Standard', range: { start: 101, end: 115 } },
   { type: 'Deluxe', range: { start: 116, end: 130 } },
@@ -42,57 +38,30 @@ const roomTypes = [
 ];
 
 const FrontDesk = () => {
-  // State variables
   const [customers, setCustomers] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [open, setOpen] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
-  // Fetch initial customer data on component mount
   useEffect(() => {
     fetchCustomers();
+    initializeRooms();
   }, []);
 
-  // Function to fetch customers data from the server
   const fetchCustomers = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/customers');
+      console.log(response.data)
       setCustomers(response.data);
     } catch (error) {
       console.error('Error fetching customers:', error);
     }
   };
 
-  // Function to handle modal opening with selected customer details
-  const handleOpen = (customer) => {
-    setSelectedCustomer(customer);
-    setOpen(true);
-  };
-
-  // Function to handle modal closing
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedCustomer(null);
-  };
-
-  // Function to handle form submission for updating customer details
-  const handleFormSubmit = (values) => {
-    axios
-      .put(`http://localhost:5000/api/customers/${selectedCustomer._id}`, values)
-      .then(() => {
-        alert('Customer profile updated successfully');
-        fetchCustomers(); // Refresh the customer list after update
-        handleClose(); // Close the modal after successful update
-      })
-      .catch((error) => {
-        alert('Error updating customer profile: ' + error.message);
-      });
-  };
-
-  // UseEffect to generate initial rooms on component mount
-  useEffect(() => {
+  const initializeRooms = () => {
     const initialRooms = [];
-
-    // Generate rooms for each room type
     for (let i = 101; i <= 140; i++) {
       let roomType = 'Standard';
       if (i >= 116 && i <= 130) roomType = 'Deluxe';
@@ -103,17 +72,65 @@ const FrontDesk = () => {
         roomType: roomType,
       });
     }
+    setRooms(initialRooms);
+  };
 
-    setCustomers(initialRooms); // Set initial rooms to state
-  }, []);
+  const handleOpen = (customer) => {
+    setSelectedCustomer(customer);
+    setOpen(true);
+  };
 
-  // Function to render room occupancy for a specific room type
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedCustomer(null);
+  };
+
+  const handleBookingOpen = (roomNumber, roomType) => {
+    setSelectedRoom({ roomNumber, roomType });
+    setIsBookingOpen(true);
+  };
+
+  const handleBookingClose = () => {
+    setIsBookingOpen(false);
+    setSelectedRoom(null);
+  };
+
+  const handleFormSubmit = (values) => {
+    axios
+      .put(`http://localhost:5000/api/customers/${selectedCustomer._id}`, values)
+      .then(() => {
+        alert('Customer profile updated successfully');
+        fetchCustomers();
+        handleClose();
+      })
+      .catch((error) => {
+        alert('Error updating customer profile: ' + error.message);
+      });
+  };
+
+  const handleBookingSubmit = (values) => {
+    const newBooking = {
+      ...values,
+      roomNumber: selectedRoom.roomNumber,
+      roomType: selectedRoom.roomType,
+    };
+
+    axios
+      .post('http://localhost:5000/api/bookings', newBooking)
+      .then(() => {
+        alert('Room booked successfully');
+        fetchCustomers();
+        handleBookingClose();
+      })
+      .catch((error) => {
+        alert('Error booking room: ' + error.message);
+      });
+  };
+
   const renderRooms = (roomType) => {
-    // Filter rooms based on room type
-    const filteredRooms = customers.filter((room) => room.roomType === roomType);
-
+    const filteredRooms = rooms.filter((room) => room.roomType === roomType);
     return (
-      <Box>
+      <Box key={roomType}>
         <Typography variant="h6" gutterBottom>
           {roomType} Rooms ({getRoomNumberRange(roomType)})
         </Typography>
@@ -130,7 +147,7 @@ const FrontDesk = () => {
               {filteredRooms.map((room) => (
                 <TableRow key={room.roomNumber}>
                   <TableCell>{room.roomNumber}</TableCell>
-                  {generateDateCells(room.roomNumber, roomType)}
+                  {generateDateCells(room.roomNumber, room.roomType)}
                 </TableRow>
               ))}
             </TableBody>
@@ -140,7 +157,6 @@ const FrontDesk = () => {
     );
   };
 
-  // Function to generate date cells for room occupancy
   const generateDateCells = (roomNumber, roomType) => {
     const currentDate = new Date();
     const dates = [];
@@ -161,7 +177,7 @@ const FrontDesk = () => {
 
       const occupiedCustomer = customers.find(
         (customer) =>
-          customer.roomNumber === roomNumber &&
+          Number(customer.roomNumber) === roomNumber &&
           customer.roomType === roomType &&
           new Date(customer.checkinDate).toLocaleDateString() <= date &&
           new Date(customer.checkoutDate).toLocaleDateString() >= date
@@ -170,9 +186,7 @@ const FrontDesk = () => {
       if (occupiedCustomer) {
         const checkinDate = new Date(occupiedCustomer.checkinDate);
         const checkoutDate = new Date(occupiedCustomer.checkoutDate);
-        const colSpan = Math.ceil(
-          (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24) + 1
-        );
+        const colSpan = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24) + 1);
 
         cells.push(
           <TableCell
@@ -206,7 +220,9 @@ const FrontDesk = () => {
               color: '#000000',
               padding: '5px',
               borderRight: index < dates.length - 1 ? '1px solid #e0e0e0' : 'none',
+              cursor: 'pointer',
             }}
+            onClick={() => handleBookingOpen(roomNumber, roomType)}
           />
         );
       }
@@ -215,21 +231,11 @@ const FrontDesk = () => {
     return cells;
   };
 
-  // Function to render each row for room occupancy
-  const renderRoomRow = (room, roomType) => (
-    <TableRow key={room.roomNumber}>
-      <TableCell>{room.roomNumber}</TableCell>
-      {generateDateCells(room.roomNumber, roomType)}
-    </TableRow>
-  );
-
-  // Function to get the room number range for a specific room type
   const getRoomNumberRange = (type) => {
     const roomType = roomTypes.find((roomType) => roomType.type === type);
     return `${roomType.range.start} to ${roomType.range.end}`;
   };
 
-  // Function to generate date headers for the table
   const generateDateHeaders = () => {
     const currentDate = new Date();
     const headers = [];
@@ -244,10 +250,10 @@ const FrontDesk = () => {
             backgroundColor: '#f0f0f0',
             color: '#000000',
             padding: '10px',
-            borderRight: i < 10 ? '1px solid #e0e0e0' : 'none', // Add border to all but last header cell
+            borderRight: i < 10 ? '1px solid #e0e0e0' : 'none',
           }}
         >
-          {date.toLocaleDateString()} {/* Adjust date formatting as needed */}
+          {date.toLocaleDateString()}
         </TableCell>
       );
     }
@@ -260,8 +266,6 @@ const FrontDesk = () => {
         <Typography variant="h4" gutterBottom>
           Room Occupancy
         </Typography>
-
-        {/* Render rooms for each room type */}
         {roomTypes.map((roomType) => (
           <Box key={roomType.type} mb="20px">
             {renderRooms(roomType.type)}
@@ -269,171 +273,300 @@ const FrontDesk = () => {
         ))}
       </Box>
 
-      {/* Modal for editing customer details */}
-      {selectedCustomer && (
-        <Modal open={open} onClose={handleClose}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 400,
-              bgcolor: '#f0f0f0',
-              boxShadow: 24,
-              p: 4,
+      <Modal open={isBookingOpen} onClose={handleBookingClose}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: '#f0f0f0',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Book Room
+          </Typography>
+          <Formik
+            initialValues={{
+              firstName: '',
+              lastName: '',
+              email: '',
+              mobile: '',
+              checkinDate: '',
+              checkoutDate: '',
+              checkinTime: '',
+              checkoutTime: '',
+              roomNumber: selectedRoom ? selectedRoom.roomNumber : '',
+              roomType: selectedRoom ? selectedRoom.roomType : '',
             }}
+            validationSchema={validationSchema}
+            onSubmit={handleBookingSubmit}
           >
+            {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  name="firstName"
+                  label="First Name"
+                  value={values.firstName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.firstName && Boolean(errors.firstName)}
+                  helperText={touched.firstName && errors.firstName}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  name="lastName"
+                  label="Last Name"
+                  value={values.lastName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.lastName && Boolean(errors.lastName)}
+                  helperText={touched.lastName && errors.lastName}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  name="email"
+                  label="Email"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.email && Boolean(errors.email)}
+                  helperText={touched.email && errors.email}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  name="mobile"
+                  label="Mobile"
+                  value={values.mobile}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.mobile && Boolean(errors.mobile)}
+                  helperText={touched.mobile && errors.mobile}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  name="checkinDate"
+                  label="Check-in Date"
+                  type="date"
+                  value={values.checkinDate}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.checkinDate && Boolean(errors.checkinDate)}
+                  helperText={touched.checkinDate && errors.checkinDate}
+                  fullWidth
+                  margin="normal"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <TextField
+                  name="checkoutDate"
+                  label="Check-out Date"
+                  type="date"
+                  value={values.checkoutDate}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.checkoutDate && Boolean(errors.checkoutDate)}
+                  helperText={touched.checkoutDate && errors.checkoutDate}
+                  fullWidth
+                  margin="normal"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <TextField
+                  name="checkinTime"
+                  label="Check-in Time"
+                  type="time"
+                  value={values.checkinTime}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.checkinTime && Boolean(errors.checkinTime)}
+                  helperText={touched.checkinTime && errors.checkinTime}
+                  fullWidth
+                  margin="normal"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <TextField
+                  name="checkoutTime"
+                  label="Check-out Time"
+                  type="time"
+                  value={values.checkoutTime}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.checkoutTime && Boolean(errors.checkoutTime)}
+                  helperText={touched.checkoutTime && errors.checkoutTime}
+                  fullWidth
+                  margin="normal"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <Button type="submit" variant="contained" color="primary" fullWidth>
+                  Book
+                </Button>
+              </form>
+            )}
+          </Formik>
+        </Box>
+      </Modal>
+
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: '#f0f0f0',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Customer Details
+          </Typography>
+          {selectedCustomer && (
             <Formik
-              initialValues={selectedCustomer}
+              initialValues={{
+                firstName: selectedCustomer.firstName || '',
+                lastName: selectedCustomer.lastName || '',
+                email: selectedCustomer.email || '',
+                mobile: selectedCustomer.mobile || '',
+                checkinDate: selectedCustomer.checkinDate ? new Date(selectedCustomer.checkinDate).toISOString().split('T')[0] : '',
+                checkoutDate: selectedCustomer.checkoutDate ? new Date(selectedCustomer.checkoutDate).toISOString().split('T')[0] : '',
+                checkinTime: selectedCustomer.checkinTime || '',
+                checkoutTime: selectedCustomer.checkoutTime || '',
+                roomNumber: selectedCustomer.roomNumber || '',
+              }}
               validationSchema={validationSchema}
               onSubmit={handleFormSubmit}
             >
-              {({
-                values,
-                errors,
-                touched,
-                handleBlur,
-                handleChange,
-                handleSubmit,
-              }) => (
+              {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
                 <form onSubmit={handleSubmit}>
-                  {/* Form fields for editing customer details */}
                   <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    label="First Name"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.firstName}
                     name="firstName"
-                    error={!!touched.firstName && !!errors.firstName}
+                    label="First Name"
+                    value={values.firstName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.firstName && Boolean(errors.firstName)}
                     helperText={touched.firstName && errors.firstName}
-                    sx={{ marginBottom: '10px' }}
+                    fullWidth
+                    margin="normal"
                   />
                   <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    label="Last Name"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.lastName}
                     name="lastName"
-                    error={!!touched.lastName && !!errors.lastName}
+                    label="Last Name"
+                    value={values.lastName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.lastName && Boolean(errors.lastName)}
                     helperText={touched.lastName && errors.lastName}
-                    sx={{ marginBottom: '10px' }}
+                    fullWidth
+                    margin="normal"
                   />
                   <TextField
-                    fullWidth
-                    variant="filled"
-                    type="email"
-                    label="Email"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.email}
                     name="email"
-                    error={!!touched.email && !!errors.email}
+                    label="Email"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.email && Boolean(errors.email)}
                     helperText={touched.email && errors.email}
-                    sx={{ marginBottom: '10px' }}
+                    fullWidth
+                    margin="normal"
                   />
                   <TextField
-                    fullWidth
-                    variant="filled"
-                    type="text"
-                    label="Mobile"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.mobile}
                     name="mobile"
-                    error={!!touched.mobile && !!errors.mobile}
+                    label="Mobile"
+                    value={values.mobile}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.mobile && Boolean(errors.mobile)}
                     helperText={touched.mobile && errors.mobile}
-                    sx={{ marginBottom: '10px' }}
+                    fullWidth
+                    margin="normal"
                   />
                   <TextField
-                    fullWidth
-                    variant="filled"
-                    type="number"
-                    label="Room Number"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.roomNumber}
-                    name="roomNumber"
-                    error={!!touched.roomNumber && !!errors.roomNumber}
-                    helperText={touched.roomNumber && errors.roomNumber}
-                    sx={{ marginBottom: '10px' }}
-                  />
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="date"
-                    label="Check-in Date"
-                    InputLabelProps={{ shrink: true }}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.checkinDate}
                     name="checkinDate"
-                    error={!!touched.checkinDate && !!errors.checkinDate}
-                    helperText={touched.checkinDate && errors.checkinDate}
-                    sx={{ marginBottom: '10px' }}
-                  />
-                  <TextField
-                    fullWidth
-                    variant="filled"
-                    type="time"
-                    label="Check-in Time"
-                    InputLabelProps={{ shrink: true }}
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.checkinTime}
-                    name="checkinTime"
-                    error={!!touched.checkinTime && !!errors.checkinTime}
-                    helperText={touched.checkinTime && errors.checkinTime}
-                    sx={{ marginBottom: '10px' }}
-                  />
-                  <TextField
-                    fullWidth
-                    variant="filled"
+                    label="Check-in Date"
                     type="date"
-                    label="Checkout Date"
-                    InputLabelProps={{ shrink: true }}
-                    onBlur={handleBlur}
+                    value={values.checkinDate}
                     onChange={handleChange}
-                    value={values.checkoutDate}
-                    name="checkoutDate"
-                    error={!!touched.checkoutDate && !!errors.checkoutDate}
-                    helperText={touched.checkoutDate && errors.checkoutDate}
-                    sx={{ marginBottom: '10px' }}
+                    onBlur={handleBlur}
+                    error={touched.checkinDate && Boolean(errors.checkinDate)}
+                    helperText={touched.checkinDate && errors.checkinDate}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                   <TextField
-                    fullWidth
-                    variant="filled"
-                    type="time"
-                    label="Checkout Time"
-                    InputLabelProps={{ shrink: true }}
-                    onBlur={handleBlur}
+                    name="checkoutDate"
+                    label="Check-out Date"
+                    type="date"
+                    value={values.checkoutDate}
                     onChange={handleChange}
-                    value={values.checkoutTime}
-                    name="checkoutTime"
-                    error={!!touched.checkoutTime && !!errors.checkoutTime}
-                    helperText={touched.checkoutTime && errors.checkoutTime}
-                    sx={{ marginBottom: '10px' }}
+                    onBlur={handleBlur}
+                    error={touched.checkoutDate && Boolean(errors.checkoutDate)}
+                    helperText={touched.checkoutDate && errors.checkoutDate}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
-                  <Button
-                    type="submit"
-                    color="secondary"
-                    variant="contained"
-                    sx={{ marginTop: '10px' }}
-                  >
-                    Update Customer
+                  <TextField
+                    name="checkinTime"
+                    label="Check-in Time"
+                    type="time"
+                    value={values.checkinTime}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.checkinTime && Boolean(errors.checkinTime)}
+                    helperText={touched.checkinTime && errors.checkinTime}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                  <TextField
+                    name="checkoutTime"
+                    label="Check-out Time"
+                    type="time"
+                    value={values.checkoutTime}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.checkoutTime && Boolean(errors.checkoutTime)}
+                    helperText={touched.checkoutTime && errors.checkoutTime}
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                  <Button type="submit" variant="contained" color="primary" fullWidth>
+                    Update
                   </Button>
                 </form>
               )}
             </Formik>
-          </Box>
-        </Modal>
-      )}
+          )}
+        </Box>
+      </Modal>
     </Box>
   );
 };
