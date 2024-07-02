@@ -26,24 +26,24 @@ db.once('open', () => {
 
 // Define a schema and model
 const customerSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  email: String,
-  mobile: String,
-  checkinDate: Date,
-  checkoutDate: Date,
-  roomNumber: String,
-  roomType: String,
-  checkinTime: String,
-  checkoutTime: String,
-  mode: String,
-  idType: String,
-  idValidationStatus: String,
-  checkinStatus: String,
-  roomAlloted: String,
-  omsCheckin: Date,
-  omsCheckout: Date,
-  idNumber: String
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { type: String, required: true },
+  mobile: { type: String, required: true },
+  checkinDate: { type: Date, required: true },
+  checkoutDate: { type: Date, required: true },
+  roomNumber: { type: String, required: true },
+  roomType: { type: String, required: true },
+  checkinTime: { type: String, required: true },
+  checkoutTime: { type: String, required: true },
+  mode: { type: String, required: true },
+  idType: { type: String, required: true },
+  idValidationStatus: { type: String, required: true },
+  checkinStatus: { type: String, required: true },
+  roomAlloted: { type: String, required: true },
+  omsCheckin: { type: Date, required: true },
+  omsCheckout: { type: Date, required: true },
+  idNumber: { type: String, required: true }
 });
 
 const Customer = mongoose.model('Customer', customerSchema);

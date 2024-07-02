@@ -72,7 +72,6 @@ const Form = () => {
     Deluxe: Array.from({ length: 15 }, (_, i) => (i + 116).toString()),
     Superior: Array.from({ length: 10 }, (_, i) => (i + 131).toString()),
   };
-  
 
   return (
     <Box m="20px">
@@ -318,8 +317,10 @@ const Form = () => {
                 sx={{ gridColumn: "span 4" }}
               >
                 <option value="">Select Check-in Status</option>
-                <option value="Checked-in">Checked-in</option>
-                <option value="Not checked-in">Not checked-in</option>
+                <option value="reserved">Reserved</option>
+                <option value="checkin pending">Check-in Pending</option>
+                <option value="checkin complete">Check-in Complete</option>
+                <option value="checkout">Checkout</option>
               </TextField>
               <TextField
                 fullWidth
