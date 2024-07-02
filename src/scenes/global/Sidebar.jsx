@@ -11,6 +11,7 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
@@ -276,6 +277,33 @@ const Sidebar = () => {
             <SubMenu
               title={
                 <Typography variant="h6" color={"black"}>
+                  Settings
+                </Typography>
+              }
+              icon={<SettingsOutlinedIcon style={{ color: 'black' }} />}
+              selected={selected.startsWith("Settings")}
+              isOpen={selected.startsWith("Settings")}
+              onClick={() => setSelected("Settings")}
+            >
+              <SubItem
+                title="Admin"
+                to="/admin"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "Admin"}
+              />
+              <SubItem
+                title="User Management"
+                to="/user-management"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "User Management"}
+              />
+            </SubMenu>
+
+            <SubMenu
+              title={
+                <Typography variant="h6" color={"black"}>
                   Resources
                 </Typography>
               }
@@ -284,12 +312,12 @@ const Sidebar = () => {
               isOpen={selected.startsWith("Resources")}
               onClick={() => setSelected("Resources")}
             >
-               <SubItem
+              <SubItem
                 title="Documentation"
                 to="/documentation"
                 selected={selected}
                 setSelected={setSelected}
-                isOpen={selected === "Onboarding"}
+                isOpen={selected === "Documentation"}
               />
               <SubItem
                 title="FAQ"
@@ -305,14 +333,13 @@ const Sidebar = () => {
                 setSelected={setSelected}
                 isOpen={selected === "Onboarding"}
               />
-               <SubItem
+              <SubItem
                 title="Tutorials"
                 to="/tutorials"
                 selected={selected}
                 setSelected={setSelected}
-                isOpen={selected === "Onboarding"}
+                isOpen={selected === "Tutorials"}
               />
-              
             </SubMenu>
 
             <Typography

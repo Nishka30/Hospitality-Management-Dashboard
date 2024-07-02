@@ -54,6 +54,8 @@ function App() {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/tutorials" element={<Tutorial />} />
               <Route path="/dcumentation" element={<Documentation/>} />
+              <Route path="/dcumentation" element={<Documentation/>} />
+              <Route path="/dcumentation" element={<Documentation/>} />
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
           </main>
