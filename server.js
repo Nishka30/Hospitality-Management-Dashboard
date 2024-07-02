@@ -33,7 +33,7 @@ const customerSchema = new mongoose.Schema({
   checkinDate: { type: Date, required: true },
   checkoutDate: { type: Date, required: true },
   roomNumber: { type: String, required: true },
-  roomType: { type: String, required: true },
+  roomType: { type: String, required: true },  // New field added
   checkinTime: { type: String, required: true },
   checkoutTime: { type: String, required: true },
   mode: { type: String, required: true },
@@ -48,7 +48,7 @@ const customerSchema = new mongoose.Schema({
 
 const Customer = mongoose.model('Customer', customerSchema);
 
-// API endpoint to handle form submission
+// API endpoint to handle form submission for creating new customers
 app.post('/api/customers', async (req, res) => {
   try {
     const newCustomer = new Customer(req.body);
@@ -60,7 +60,7 @@ app.post('/api/customers', async (req, res) => {
   }
 });
 
-// API endpoint to fetch customers
+// API endpoint to fetch all customers
 app.get('/api/customers', async (req, res) => {
   try {
     const customers = await Customer.find();
