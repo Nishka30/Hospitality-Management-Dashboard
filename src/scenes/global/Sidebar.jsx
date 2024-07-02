@@ -22,6 +22,10 @@ import RoomsOutlinedIcon from "@mui/icons-material/HouseOutlined";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
+import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined"; // New icon for Operational Status
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined"; // New icon for Notifications
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -189,14 +193,7 @@ const Sidebar = () => {
             >
               Guests Management
             </Typography>
-            <Item
-              title="Manage Team"
-              to="/team"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
+            
             <SubMenu
               title={
                 <Typography variant="h6" color={"black"}>
@@ -251,7 +248,13 @@ const Sidebar = () => {
                 setSelected={setSelected}
               />
             </SubMenu>
-
+            <Item
+              title="Feedback"
+              to="/feedback"
+              icon={<FeedbackOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Typography
               variant="h6"
               color={colors.grey[300]}
@@ -260,9 +263,44 @@ const Sidebar = () => {
               Team Management
             </Typography>
             <Item
+              title="Manage Team"
+              to="/team"
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            <SubMenu
+              title={
+                <Typography variant="h6" color={"black"}>
+                  Operational Status
+                </Typography>
+              }
+              icon={<VisibilityOutlinedIcon style={{ color: 'black' }} />}
+              selected={selected.startsWith("Operational Status")}
+              isOpen={selected.startsWith("Operational Status")}
+              onClick={() => setSelected("Operational Status")}
+            >
+              <SubItem
+                title="Bots Running"
+                to="/bots-running"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "Bots Running"}
+              />
+              <SubItem
+                title="Notifications"
+                to="/notifications"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "Notifications"}
+              />
+            </SubMenu>
+
+            <Item
               title="Night Audit"
               to="/form"
-              icon={<PersonOutlinedIcon />}
+              icon={<AssignmentTurnedInOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -339,6 +377,33 @@ const Sidebar = () => {
                 selected={selected}
                 setSelected={setSelected}
                 isOpen={selected === "Tutorials"}
+              />
+            </SubMenu>
+
+            <SubMenu
+              title={
+                <Typography variant="h6" color={"black"}>
+                  Technical Support
+                </Typography>
+              }
+              icon={<HelpOutlineOutlinedIcon style={{ color: 'black' }} />}
+              selected={selected.startsWith("Technical Support")}
+              isOpen={selected.startsWith("Technical Support")}
+              onClick={() => setSelected("Technical Support")}
+            >
+              <SubItem
+                title="Update"
+                to="/update"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "Update"}
+              />
+              <SubItem
+                title="About"
+                to="/techAbout"
+                selected={selected}
+                setSelected={setSelected}
+                isOpen={selected === "About"}
               />
             </SubMenu>
 
