@@ -24,7 +24,7 @@ import NewUser from "./scenes/newuser";
 import FrontDesk from "./scenes/frontdesk";
 import Feedback from "./scenes/feedback";
 import Technical from "./scenes/techsupp";
-import Update from "./scenes/update";
+
 import TechAbout from "./scenes/techAbout";
 
 function App() {
@@ -60,7 +60,7 @@ function App() {
               <Route path="/dcumentation" element={<Documentation/>} />
               <Route path="/feedback" element={<Feedback/>} />
               <Route path="/techsupp" element={<Technical/>} />
-              <Route path="/update" element={<Update/>} />
+              <Route path="/documentation" element={<Documentation/>} />
               <Route path="/techAbout" element={<TechAbout/>} />
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>

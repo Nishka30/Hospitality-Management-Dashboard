@@ -392,13 +392,6 @@ const Sidebar = () => {
               onClick={() => setSelected("Technical Support")}
             >
               <SubItem
-                title="Update"
-                to="/update"
-                selected={selected}
-                setSelected={setSelected}
-                isOpen={selected === "Update"}
-              />
-              <SubItem
                 title="About"
                 to="/techAbout"
                 selected={selected}

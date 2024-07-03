@@ -43,6 +43,7 @@ const DocumentationPage = () => {
             variant="outlined"
             placeholder="Write download instructions here..."
             sx={{ mb: 2 }}
+            defaultValue="Provide detailed instructions on how to download and install the project."
           />
         </Box>
 
@@ -57,7 +58,86 @@ const DocumentationPage = () => {
             variant="outlined"
             placeholder="Write usage instructions here..."
             sx={{ mb: 2 }}
+            defaultValue="Provide detailed instructions on how to use the project. Include screenshots and step-by-step guidelines if necessary."
           />
+        </Box>
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Features Description
+          </Typography>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Room Booking
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              defaultValue="Room booking feature allows users to reserve rooms in the hotel. It includes options to select room type, check availability, and make reservations."
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Adding New Guests through Form
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              defaultValue="This feature allows the hotel staff to add new guests by filling out a form with the guest's details, including name, contact information, and room preferences."
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Night Audit
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              defaultValue="Night audit feature provides a comprehensive overview of the day's transactions and activities, ensuring that all data is accurate and up-to-date."
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Resources
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              defaultValue="The resources section includes tutorials and guides on how to use different parts of the website, such as adding a new guest or operating the front desk."
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Operational Status
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              defaultValue="The operational status section provides real-time updates on the status of various systems, including bot status and notifications."
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Add New Section
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              placeholder="Add new documentation here..."
+            />
+          </Box>
         </Box>
 
         <Box sx={{ mb: 4 }}>
@@ -71,6 +151,7 @@ const DocumentationPage = () => {
             variant="outlined"
             placeholder="Write additional documentation here..."
             sx={{ mb: 2 }}
+            defaultValue="Include any additional information or documentation that might be helpful for understanding and using the project."
           />
         </Box>
 
