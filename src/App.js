@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
-import Team from "./scenes/team";
+
 import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
 // import Bar from "./scenes/bar";
@@ -18,6 +18,7 @@ import Documentation from "./scenes/documentation";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Calendar from "./scenes/calendar/calendar";
+import Team from "./scenes/userManage";
 import Guests from "./scenes/guest";
 import Rooms from "./scenes/rooms";
 import NewUser from "./scenes/newuser";
@@ -62,6 +63,7 @@ function App() {
               <Route path="/techsupp" element={<Technical/>} />
               <Route path="/documentation" element={<Documentation/>} />
               <Route path="/techAbout" element={<TechAbout/>} />
+              <Route path="/userManage" element={<Team/>} />
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
           </main>

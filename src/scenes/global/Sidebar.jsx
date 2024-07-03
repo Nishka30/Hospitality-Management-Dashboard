@@ -262,14 +262,7 @@ const Sidebar = () => {
             >
               Team Management
             </Typography>
-            <Item
-              title="Manage Team"
-              to="/team"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
+            
             <SubMenu
               title={
                 <Typography variant="h6" color={"black"}>
@@ -332,7 +325,7 @@ const Sidebar = () => {
               />
               <SubItem
                 title="User Management"
-                to="/user-management"
+                to="/userManage"
                 selected={selected}
                 setSelected={setSelected}
                 isOpen={selected === "User Management"}
