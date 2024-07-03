@@ -275,8 +275,8 @@ const Sidebar = () => {
               onClick={() => setSelected("Operational Status")}
             >
               <SubItem
-                title="Bots Running"
-                to="/bots-running"
+                title="Bot Status"
+                to="/botStatus"
                 selected={selected}
                 setSelected={setSelected}
                 isOpen={selected === "Bots Running"}

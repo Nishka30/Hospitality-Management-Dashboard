@@ -25,8 +25,8 @@ import NewUser from "./scenes/newuser";
 import FrontDesk from "./scenes/frontdesk";
 import Feedback from "./scenes/feedback";
 import Technical from "./scenes/techsupp";
-
 import TechAbout from "./scenes/techAbout";
+import Bot from "./scenes/botStatus";
 
 function App() {
 
@@ -43,7 +43,7 @@ function App() {
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/team" element={<Team />} />
+   
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/rooms" element={<Rooms />} />
@@ -64,6 +64,7 @@ function App() {
               <Route path="/documentation" element={<Documentation/>} />
               <Route path="/techAbout" element={<TechAbout/>} />
               <Route path="/userManage" element={<Team/>} />
+              <Route path="/botStatus" element={<Bot/>} />
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
           </main>
