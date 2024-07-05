@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Header from '../../components/Header';
-import axios from 'axios'; 
+import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Form = () => {
@@ -13,6 +13,7 @@ const Form = () => {
   const { id } = useParams(); // Get staff ID from URL params
   const navigate = useNavigate();
 
+  // Function to handle form submission
   const handleFormSubmit = async (values) => {
     try {
       if (id) {
@@ -22,19 +23,20 @@ const Form = () => {
         await axios.post('http://localhost:5000/api/staff', values);
         alert('Staff profile saved successfully');
       }
-      navigate('/usermanage');
+      navigate('/usermanage'); // Navigate to staff management page after submission
     } catch (error) {
       console.error('Error saving staff profile:', error);
       alert('Error saving staff profile');
     }
   };
 
+  // Function to fetch staff data if editing existing staff
   const fetchStaffData = async () => {
     if (id) {
       try {
         const response = await axios.get(`http://localhost:5000/api/staff/${id}`);
         const staff = response.data;
-        setInitialValues(staff);
+        setInitialValues(staff); // Set form initial values based on fetched data
       } catch (error) {
         console.error('Error fetching staff data:', error);
       }
@@ -54,6 +56,8 @@ const Form = () => {
     password: '',
     staffAccess: '',
     staffProgress: '',
+    idType: '', // Added idType field
+    idNumber: '', // Added idNumber field
   });
 
   return (
@@ -196,6 +200,32 @@ const Form = () => {
                   <MenuItem value="Active">Active</MenuItem>
                 </Select>
               </FormControl>
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="ID Type"
+                name="idType"
+                value={values.idType}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={!!touched.idType && !!errors.idType}
+                helperText={touched.idType && errors.idType}
+                sx={{ gridColumn: 'span 4' }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="ID Number"
+                name="idNumber"
+                value={values.idNumber}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={!!touched.idNumber && !!errors.idNumber}
+                helperText={touched.idNumber && errors.idNumber}
+                sx={{ gridColumn: 'span 4' }}
+              />
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="primary" variant="contained">
@@ -218,6 +248,8 @@ const checkoutSchema = yup.object().shape({
   password: yup.string().required('Required'),
   staffAccess: yup.string().required('Required'),
   staffProgress: yup.string().required('Required'),
+  idType: yup.string().required('Required'), // Validation for idType
+  idNumber: yup.string().required('Required'), // Validation for idNumber
 });
 
 export default Form;

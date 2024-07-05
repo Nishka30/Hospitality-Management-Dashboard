@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, useTheme, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Box, Button, Typography, useTheme, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
@@ -15,7 +15,9 @@ const Team = () => {
   const navigate = useNavigate();
   const [selectionModel, setSelectionModel] = useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false); // State for edit dialog
   const [staffData, setStaffData] = useState([]);
+  const [selectedStaff, setSelectedStaff] = useState(null); // State to hold selected staff member for editing
 
   useEffect(() => {
     const fetchStaffData = async () => {
@@ -56,18 +58,37 @@ const Team = () => {
       alert('Error deleting staff profile');
     }
   };
-  
 
   const handleEditStaff = () => {
     if (selectionModel.length === 1) {
-      navigate(`/onboarding/${selectionModel[0]}`);
+      const selectedStaffMember = staffData.find(staff => staff._id === selectionModel[0]);
+      setSelectedStaff(selectedStaffMember);
+      setOpenEditDialog(true);
     } else {
       alert("Please select one staff member to edit.");
     }
   };
 
+  const handleSaveChanges = async () => {
+    try {
+      const updatedStaff = await axios.put(`http://localhost:5000/api/staff/${selectedStaff._id}`, selectedStaff);
+      // Update staffData with updated staff
+      setStaffData(staffData.map(staff => (staff._id === updatedStaff.data._id ? updatedStaff.data : staff)));
+      setOpenEditDialog(false);
+      alert("Staff profile updated successfully");
+    } catch (error) {
+      console.error('Error updating staff profile:', error);
+      alert('Error updating staff profile');
+    }
+  };
+
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+  };
+
   const columns = [
-    { field: "id", headerName: "ID" },
+    { field: "idNumber", headerName: "ID" },
+    { field: "idType", headerName: "ID Type" },
     {
       field: "firstName",
       headerName: "First Name",
@@ -96,6 +117,7 @@ const Team = () => {
       headerName: "Email",
       flex: 1,
     },
+    { field: "staffProgress", headerName: "Staff Progress" },
     {
       field: "staffAccess",
       headerName: "Access Level",
@@ -109,17 +131,17 @@ const Team = () => {
             display="flex"
             justifyContent="center"
             backgroundColor={
-              staffAccess === "admin"
+              staffAccess === "Admin"
                 ? colors.greenAccent[600]
-                : staffAccess === "manager"
+                : staffAccess === "Manager"
                 ? colors.greenAccent[700]
                 : colors.greenAccent[700]
             }
             borderRadius="4px"
           >
-            {staffAccess === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {staffAccess === "manager" && <SecurityOutlinedIcon />}
-            {staffAccess === "user" && <LockOpenOutlinedIcon />}
+            {staffAccess === "Admin" && <AdminPanelSettingsOutlinedIcon />}
+            {staffAccess === "Manager" && <SecurityOutlinedIcon />}
+            {staffAccess === "Staff" && <LockOpenOutlinedIcon />}
             <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
               {staffAccess}
             </Typography>
@@ -132,16 +154,16 @@ const Team = () => {
   return (
     <Box m="20px">
       <Header title="TEAM" subtitle="Managing the Team Members" />
-      <Box display="flex" justifyContent="space-between" my="20px">
-        <Button variant="contained" color="primary" onClick={handleAddNewStaff}>
-          Add New Staff
-        </Button>
-        <Button variant="contained" color="secondary" onClick={handleDeleteStaff}>
-          Delete Staff
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleEditStaff}>
-          Edit Staff
-        </Button>
+      <Box display="inline" margin="10px" my="20px">
+      <Button variant="contained" color="primary" onClick={handleAddNewStaff} sx={{ marginRight: '10px' }}>
+    Add New Staff
+  </Button>
+  <Button variant="contained" color="secondary" onClick={handleDeleteStaff} sx={{ margin: '0 10px' }}>
+    Delete Staff
+  </Button>
+  <Button variant="contained" color="primary" onClick={handleEditStaff} sx={{ marginLeft: '10px' }}>
+    Edit Staff
+  </Button>
       </Box>
       <Box
         m="40px 0 0 0"
@@ -201,8 +223,101 @@ const Team = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* Edit Staff Dialog */}
+      <Dialog
+        open={openEditDialog}
+        onClose={handleCloseEditDialog}
+      >
+        <DialogTitle>Edit Staff</DialogTitle>
+        <DialogContent>
+          {selectedStaff && (
+            <>
+              <TextField
+                label="First Name"
+                fullWidth
+                value={selectedStaff.firstName}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, firstName: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="Last Name"
+                fullWidth
+                value={selectedStaff.lastName}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, lastName: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="Age"
+                fullWidth
+                type="number"
+                value={selectedStaff.age}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, age: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="Contact Number"
+                fullWidth
+                value={selectedStaff.contact}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, contact: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="Email"
+                fullWidth
+                value={selectedStaff.email}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, email: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="Access Level"
+                fullWidth
+                value={selectedStaff.staffAccess}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, staffAccess: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="ID Type"
+                fullWidth
+                value={selectedStaff.idType}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, idType: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="ID Number"
+                fullWidth
+                value={selectedStaff.idNumber}
+                onChange={(e) =>                setSelectedStaff({ ...selectedStaff, idNumber: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="Password"
+                fullWidth
+                value={selectedStaff.password}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, password: e.target.value })}
+                margin="normal"
+              />
+              <TextField
+                label="Staff Progress"
+                fullWidth
+                value={selectedStaff.staffProgress}
+                onChange={(e) => setSelectedStaff({ ...selectedStaff, staffProgress: e.target.value })}
+                margin="normal"
+              />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSaveChanges} color="primary">
+            Save Changes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
 
 export default Team;
+
