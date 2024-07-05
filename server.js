@@ -1,22 +1,17 @@
-// Import necessary modules
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-// Initialize express app
 const app = express();
-const port = 5000;
+const port = 5001; // Changed the port to 5001
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/customerCheckin', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect('mongodb://localhost:27017/customerCheckin', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -24,43 +19,53 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-// Define a schema and model
+// Define a schema and model for customers
 const customerSchema = new mongoose.Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: { type: String, required: true },
-  mobile: { type: String, required: true },
-  checkinDate: { type: Date, required: true },
-  checkoutDate: { type: Date, required: true },
-  roomNumber: { type: String, required: true },
-  roomType: { type: String, required: true },  // New field added
-  checkinTime: { type: String, required: true },
-  checkoutTime: { type: String, required: true },
-  mode: { type: String, required: true },
-  idType: { type: String, required: true },
-  idValidationStatus: { type: String, required: true },
-  checkinStatus: { type: String, required: true },
-  roomAlloted: { type: String, required: true },
-  omsCheckin: { type: Date, required: true },
-  omsCheckout: { type: Date, required: true },
-  idNumber: { type: String, required: true }
+  firstName: String,
+  lastName: String,
+  email: String,
+  mobile: String,
+  checkinDate: Date,
+  checkoutDate: Date,
+  roomNumber: String,
+  roomType: String,
+  checkinTime: String,
+  checkoutTime: String,
+  mode: String,
+  idType: String,
+  idValidationStatus: String,
+  checkinStatus: String,
+  roomAlloted: String,
+  omsCheckin: Date,
+  omsCheckout: Date,
+  idNumber: String
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
 
-// API endpoint to handle form submission for creating new customers
-app.post('/api/customers', async (req, res) => {
-  try {
-    const newCustomer = new Customer(req.body);
-    await newCustomer.save();
-    res.status(201).send('Customer profile saved successfully');
-  } catch (error) {
-    console.error('Error saving customer profile:', error.message);
-    res.status(400).send('Error saving customer profile: ' + error.message);
-  }
+// Define a schema and model for staff
+const staffSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  email: String,
+  contact: String,
+  age: Number,
+  password: String,
+  staffAccess: String,
+  staffProgress: String,
 });
 
-// API endpoint to fetch all customers
+const Staff = mongoose.model('Staff', staffSchema);
+
+// API endpoint to handle customer form submission
+app.post('/api/customers', (req, res) => {
+  const newCustomer = new Customer(req.body);
+  newCustomer.save()
+    .then(() => res.status(201).send('Customer profile saved successfully'))
+    .catch(err => res.status(400).send('Error saving customer profile: ' + err));
+});
+
+// API endpoint to fetch customers
 app.get('/api/customers', async (req, res) => {
   try {
     const customers = await Customer.find();
@@ -71,32 +76,52 @@ app.get('/api/customers', async (req, res) => {
   }
 });
 
-// API endpoint to update customer details
-app.put('/api/customers/:id', async (req, res) => {
+// API endpoint to handle staff form submission
+app.post('/api/staff', (req, res) => {
+  const newStaff = new Staff(req.body);
+  newStaff.save()
+    .then(() => res.status(201).send('Staff profile saved successfully'))
+    .catch(err => res.status(400).send('Error saving staff profile: ' + err));
+});
+
+// API endpoint to fetch staff
+app.get('/api/staff', async (req, res) => {
   try {
-    const { id } = req.params;
-    const updatedCustomer = await Customer.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
-    if (!updatedCustomer) {
-      return res.status(404).send('Customer not found');
-    }
-    res.json(updatedCustomer);
+    const staff = await Staff.find();
+    res.json(staff);
   } catch (error) {
-    console.error('Error updating customer profile:', error.message);
-    res.status(400).send('Error updating customer profile: ' + error.message);
+    console.error('Error fetching staff:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-// API endpoint to handle room bookings
-app.post('/api/bookings', async (req, res) => {
+// API endpoint to update staff information
+// API endpoint to update staff information
+app.put('/api/staff/:id', async (req, res) => {
   try {
-    const newBooking = new Customer(req.body);
-    await newBooking.save();
-    res.status(201).send('Room booked successfully');
+    const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedStaff);
   } catch (error) {
-    console.error('Error booking room:', error.message);
-    res.status(400).send('Error booking room: ' + error.message);
+    console.error('Error updating staff profile:', error);
+    res.status(400).json({ error: 'Error updating staff profile' });
   }
 });
+
+// API endpoint to delete staff
+app.delete('/api/staff/:id', async (req, res) => {
+  try {
+    const deletedStaff = await Staff.findByIdAndDelete(req.params.id);
+    if (!deletedStaff) {
+      return res.status(404).json({ error: 'Staff member not found' });
+    }
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting staff profile:', error);
+    res.status(400).json({ error: 'Error deleting staff profile' });
+  }
+});
+
+
 
 // Start server
 app.listen(port, () => {
