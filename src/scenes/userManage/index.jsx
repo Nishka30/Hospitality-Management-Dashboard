@@ -1,49 +1,83 @@
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataTeam } from "../../data/mockData";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
-import { useState } from "react";
-import { useNavigate } from 'react-router-dom';  // Ensure this is correctly imported
+import axios from 'axios'; 
+import { useNavigate } from 'react-router-dom';
 
 const Team = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate();  // Use navigate hook
+  const navigate = useNavigate();
   const [selectionModel, setSelectionModel] = useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [staffData, setStaffData] = useState([]);
+
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/staff');
+        setStaffData(response.data);
+      } catch (error) {
+        console.error('Error fetching staff data:', error);
+      }
+    };
+
+    fetchStaffData();
+  }, []);
 
   const handleAddNewStaff = () => {
     navigate('/onboarding');
   };
 
   const handleDeleteStaff = () => {
+    if (selectionModel.length === 0) {
+      alert("Please select staff members to delete.");
+      return;
+    }
     setOpenDeleteDialog(true);
   };
-
-  const handleConfirmDelete = () => {
-    // Perform delete action here
-    setOpenDeleteDialog(false);
+  
+  const handleConfirmDelete = async () => {
+    try {
+      await Promise.all(
+        selectionModel.map(id => axios.delete(`http://localhost:5000/api/staff/${id}`))
+      );
+      setStaffData(staffData.filter(staff => !selectionModel.includes(staff._id)));
+      setSelectionModel([]);
+      setOpenDeleteDialog(false);
+      alert("Staff profiles deleted successfully");
+    } catch (error) {
+      console.error('Error deleting staff profile:', error);
+      alert('Error deleting staff profile');
+    }
   };
+  
 
   const handleEditStaff = () => {
     if (selectionModel.length === 1) {
       navigate(`/onboarding/${selectionModel[0]}`);
     } else {
-      alert("Please select one staff to edit.");
+      alert("Please select one staff member to edit.");
     }
   };
 
   const columns = [
     { field: "id", headerName: "ID" },
     {
-      field: "name",
-      headerName: "Name",
+      field: "firstName",
+      headerName: "First Name",
       flex: 1,
       cellClassName: "name-column--cell",
+    },
+    {
+      field: "lastName",
+      headerName: "Last Name",
+      flex: 1,
     },
     {
       field: "age",
@@ -53,8 +87,8 @@ const Team = () => {
       align: "left",
     },
     {
-      field: "phone",
-      headerName: "Phone Number",
+      field: "contact",
+      headerName: "Contact Number",
       flex: 1,
     },
     {
@@ -63,10 +97,10 @@ const Team = () => {
       flex: 1,
     },
     {
-      field: "accessLevel",
+      field: "staffAccess",
       headerName: "Access Level",
       flex: 1,
-      renderCell: ({ row: { access } }) => {
+      renderCell: ({ row: { staffAccess } }) => {
         return (
           <Box
             width="60%"
@@ -75,19 +109,19 @@ const Team = () => {
             display="flex"
             justifyContent="center"
             backgroundColor={
-              access === "admin"
+              staffAccess === "admin"
                 ? colors.greenAccent[600]
-                : access === "manager"
+                : staffAccess === "manager"
                 ? colors.greenAccent[700]
                 : colors.greenAccent[700]
             }
             borderRadius="4px"
           >
-            {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {access === "manager" && <SecurityOutlinedIcon />}
-            {access === "user" && <LockOpenOutlinedIcon />}
+            {staffAccess === "admin" && <AdminPanelSettingsOutlinedIcon />}
+            {staffAccess === "manager" && <SecurityOutlinedIcon />}
+            {staffAccess === "user" && <LockOpenOutlinedIcon />}
             <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
-              {access}
+              {staffAccess}
             </Typography>
           </Box>
         );
@@ -140,7 +174,7 @@ const Team = () => {
       >
         <DataGrid
           checkboxSelection
-          rows={mockDataTeam}
+          rows={staffData.map((staff) => ({ id: staff._id, ...staff }))}
           columns={columns}
           onSelectionModelChange={(newSelection) => {
             setSelectionModel(newSelection);
@@ -155,7 +189,7 @@ const Team = () => {
         <DialogTitle>{"Confirm Delete"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete the selected staff?
+            Are you sure you want to delete the selected staff members?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
