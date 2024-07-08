@@ -1,10 +1,8 @@
-// Import necessary modules
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-// Initialize express app
 const app = express();
 const port = 5000;
 
@@ -44,6 +42,7 @@ const customerSchema = new mongoose.Schema({
   omsCheckin: { type: Date, required: true },
   omsCheckout: { type: Date, required: true },
   idNumber: { type: String, required: true },
+  totalGuests: { type: Number, required: true }, // Added totalGuests field
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
@@ -165,6 +164,21 @@ app.get('/api/staff', async (req, res) => {
   } catch (error) {
     console.error('Error fetching staff data:', error.message);
     res.status(500).send('Error fetching staff data: ' + error.message);
+  }
+});
+
+// Fetch total guests across all customer records
+app.get('/api/totalGuests', async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    let totalGuests = 0;
+    customers.forEach(customer => {
+      totalGuests += customer.totalGuests || 0;
+    });
+    res.json({ totalGuests });
+  } catch (error) {
+    console.error('Error fetching total guests:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

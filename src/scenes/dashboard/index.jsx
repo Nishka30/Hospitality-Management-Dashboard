@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import House from "@mui/icons-material/House";
@@ -13,14 +15,92 @@ import LineChart from "../../components/LineChart";
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [totalGuests, setTotalGuests] = useState(0);
+  const [expectedArrivals, setExpectedArrivals] = useState(0);
+  const [expectedDepartures, setExpectedDepartures] = useState(0);
+  const [endOfDayTotalGuests, setEndOfDayTotalGuests] = useState(0); // State for end of day total guests
 
-  // Dummy data for current status table
   const currentStatusData = [
     { section: "Start of the Day", rooms: 100, pax: 250, percent: "50%" },
     { section: "Realized Arrivals", rooms: 10, pax: 20, percent: "10%" },
     { section: "Realized Departures", rooms: 5, pax: 12, percent: "5%" },
     { section: "End of the Day", rooms: 105, pax: 258, percent: "51%" },
   ];
+
+  useEffect(() => {
+    const fetchTotalGuests = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/totalGuests');
+        const totalGuests = response.data.totalGuests;
+        setTotalGuests(totalGuests);
+      } catch (error) {
+        console.error('Error fetching total guests:', error);
+      }
+    };
+
+    const fetchExpectedArrivals = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/customers');
+        const customers = response.data;
+
+        // Calculate today's date in yyyy-mm-dd format
+        const today = new Date().toISOString().slice(0, 10);
+
+        // Filter customers whose checkinDate matches today's date
+        const filteredCustomers = customers.filter(customer => {
+          return customer.checkinDate.slice(0, 10) === today;
+        });
+
+        // Calculate total guests arriving today
+        let totalArrivals = 0;
+        filteredCustomers.forEach(customer => {
+          totalArrivals += customer.totalGuests || 0;
+        });
+
+        // Update state with total guests arriving today
+        setExpectedArrivals(totalArrivals);
+      } catch (error) {
+        console.error('Error fetching expected arrivals:', error);
+      }
+    };
+
+    const fetchExpectedDepartures = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/customers');
+        const customers = response.data;
+
+        // Calculate today's date in yyyy-mm-dd format
+        const today = new Date().toISOString().slice(0, 10);
+
+        // Filter customers whose checkoutDate matches today's date
+        const filteredCustomers = customers.filter(customer => {
+          return customer.checkoutDate.slice(0, 10) === today;
+        });
+
+        // Calculate total guests departing today
+        let totalDepartures = 0;
+        filteredCustomers.forEach(customer => {
+          totalDepartures += customer.totalGuests || 0;
+        });
+
+        // Update state with total guests departing today
+        setExpectedDepartures(totalDepartures);
+      } catch (error) {
+        console.error('Error fetching expected departures:', error);
+      }
+    };
+
+    const calculateEndOfDayTotalGuests = () => {
+      // Calculate end of day total guests
+      const endOfDayTotal = totalGuests + expectedArrivals - expectedDepartures;
+      setEndOfDayTotalGuests(endOfDayTotal);
+    };
+
+    fetchTotalGuests();
+    fetchExpectedArrivals();
+    fetchExpectedDepartures();
+    calculateEndOfDayTotalGuests();
+  }, [totalGuests, expectedArrivals, expectedDepartures]);
 
   return (
     <Box m="20px">
@@ -65,7 +145,7 @@ const Dashboard = () => {
           borderRadius={2}
         >
           <StatBox
-            title="60"
+            title={totalGuests}
             subtitle="Current In-House Guests"
             progress="0.75"
             increase="+14%"
@@ -82,7 +162,7 @@ const Dashboard = () => {
           borderRadius={2}
         >
           <StatBox
-            title="8"
+            title={expectedArrivals}
             subtitle="Expected Arrivals Today"
             progress="0.82"
             increase="+21%"
@@ -99,7 +179,7 @@ const Dashboard = () => {
           borderRadius={2}
         >
           <StatBox
-            title="12"
+            title={expectedDepartures}
             subtitle="Expected Departures Today"
             progress="0.30"
             increase="+5%"
@@ -116,7 +196,7 @@ const Dashboard = () => {
           borderRadius={2}
         >
           <StatBox
-            title="80"
+            title={endOfDayTotalGuests}
             subtitle="End of Day Total Guests"
             progress="0.80"
             increase="-1%"
