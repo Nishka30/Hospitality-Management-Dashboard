@@ -23,6 +23,8 @@ db.once('open', () => {
 });
 
 // Define schemas and models
+
+// Customer schema and model (unchanged from previous)
 const customerSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -42,11 +44,12 @@ const customerSchema = new mongoose.Schema({
   omsCheckin: { type: Date, required: true },
   omsCheckout: { type: Date, required: true },
   idNumber: { type: String, required: true },
-  totalGuests: { type: Number, required: true }, // Added totalGuests field
+  totalGuests: { type: Number, required: true },
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
 
+// Staff schema and model (unchanged from previous)
 const staffSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -56,15 +59,33 @@ const staffSchema = new mongoose.Schema({
   password: { type: String, required: true },
   staffAccess: { type: String, required: true },
   staffProgress: { type: String, required: true },
-  idType: { type: String, required: true }, // Added idType field
-  idNumber: { type: String, required: true }, // Added idNumber field
+  idType: { type: String, required: true },
+  idNumber: { type: String, required: true },
 });
 
 const Staff = mongoose.model('Staff', staffSchema);
 
+// Menu Item schema and model (new for food section)
+const menuItemSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  price: { type: Number, required: true },
+  available: { type: Boolean, required: true },
+});
+
+const MenuItem = mongoose.model('MenuItem', menuItemSchema);
+
+// Order schema and model (unchanged from previous)
+const orderSchema = new mongoose.Schema({
+  customer: { type: String, required: true },
+  item: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem', required: true },
+  status: { type: String, required: true },
+});
+
+const Order = mongoose.model('Order', orderSchema);
+
 // API endpoints
 
-// Create new customer profile
+// Create new customer profile (unchanged from previous)
 app.post('/api/customers', async (req, res) => {
   try {
     const newCustomer = new Customer(req.body);
@@ -76,7 +97,7 @@ app.post('/api/customers', async (req, res) => {
   }
 });
 
-// Fetch all customers
+// Fetch all customers (unchanged from previous)
 app.get('/api/customers', async (req, res) => {
   try {
     const customers = await Customer.find();
@@ -87,7 +108,7 @@ app.get('/api/customers', async (req, res) => {
   }
 });
 
-// Update customer profile by ID
+// Update customer profile by ID (unchanged from previous)
 app.put('/api/customers/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,7 +123,7 @@ app.put('/api/customers/:id', async (req, res) => {
   }
 });
 
-// Book a room (create new customer profile)
+// Book a room (create new customer profile) (unchanged from previous)
 app.post('/api/bookings', async (req, res) => {
   try {
     const newBooking = new Customer(req.body);
@@ -114,7 +135,7 @@ app.post('/api/bookings', async (req, res) => {
   }
 });
 
-// Create new staff profile
+// Create new staff profile (unchanged from previous)
 app.post('/api/staff', async (req, res) => {
   try {
     const newStaff = new Staff(req.body);
@@ -126,7 +147,7 @@ app.post('/api/staff', async (req, res) => {
   }
 });
 
-// Update staff profile by ID
+// Update staff profile by ID (unchanged from previous)
 app.put('/api/staff/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -141,7 +162,7 @@ app.put('/api/staff/:id', async (req, res) => {
   }
 });
 
-// Delete staff profile by ID
+// Delete staff profile by ID (unchanged from previous)
 app.delete('/api/staff/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -156,7 +177,7 @@ app.delete('/api/staff/:id', async (req, res) => {
   }
 });
 
-// Fetch all staff members
+// Fetch all staff members (unchanged from previous)
 app.get('/api/staff', async (req, res) => {
   try {
     const staff = await Staff.find();
@@ -167,7 +188,113 @@ app.get('/api/staff', async (req, res) => {
   }
 });
 
-// Fetch total guests across all customer records
+// Create new menu item (new for food section)
+app.post('/api/menuItems', async (req, res) => {
+  try {
+    const newMenuItem = new MenuItem(req.body);
+    await newMenuItem.save();
+    res.status(201).send('Menu item added successfully');
+  } catch (error) {
+    console.error('Error adding menu item:', error.message);
+    res.status(400).send('Error adding menu item: ' + error.message);
+  }
+});
+
+// Fetch all menu items (new for food section)
+app.get('/api/menuItems', async (req, res) => {
+  try {
+    const menuItems = await MenuItem.find();
+    res.json(menuItems);
+  } catch (error) {
+    console.error('Error fetching menu items:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Update menu item by ID (new for food section)
+app.put('/api/menuItems/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedMenuItem = await MenuItem.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!updatedMenuItem) {
+      return res.status(404).send('Menu item not found');
+    }
+    res.json(updatedMenuItem);
+  } catch (error) {
+    console.error('Error updating menu item:', error.message);
+    res.status(400).send('Error updating menu item: ' + error.message);
+  }
+});
+
+// Delete menu item by ID (new for food section)
+app.delete('/api/menuItems/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedMenuItem = await MenuItem.findByIdAndDelete(id);
+    if (!deletedMenuItem) {
+      return res.status(404).send('Menu item not found');
+    }
+    res.json({ message: 'Menu item deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting menu item:', error.message);
+    res.status(400).send('Error deleting menu item: ' + error.message);
+  }
+});
+
+// Place an order (unchanged from previous)
+app.post('/api/orders', async (req, res) => {
+  try {
+    const newOrder = new Order(req.body);
+    await newOrder.save();
+    res.status(201).send('Order placed successfully');
+  } catch (error) {
+    console.error('Error placing order:', error.message);
+    res.status(400).send('Error placing order: ' + error.message);
+  }
+});
+
+// Fetch all orders (unchanged from previous)
+app.get('/api/orders', async (req, res) => {
+  try {
+    const orders = await Order.find().populate('item');
+    res.json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Update order by ID (unchanged from previous)
+app.put('/api/orders/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedOrder = await Order.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!updatedOrder) {
+      return res.status(404).send('Order not found');
+    }
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order:', error.message);
+    res.status(400).send('Error updating order: ' + error.message);
+  }
+});
+
+// Delete order by ID (unchanged from previous)
+app.delete('/api/orders/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedOrder = await Order.findByIdAndDelete(id);
+    if (!deletedOrder) {
+      return res.status(404).send('Order not found');
+    }
+    res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting order:', error.message);
+    res.status(400).send('Error deleting order: ' + error.message);
+  }
+});
+
+// Fetch total guests across all customer records (unchanged from previous)
 app.get('/api/totalGuests', async (req, res) => {
   try {
     const customers = await Customer.find();

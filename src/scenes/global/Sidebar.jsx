@@ -24,8 +24,9 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
 import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined"; // New icon for Operational Status
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined"; // New icon for Notifications
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu"; // New icon for Food/Beverages
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -300,7 +301,7 @@ const Sidebar = () => {
              <Item
               title="Food/Beverages"
               to="/food"
-              icon={<CalendarTodayOutlinedIcon />}
+              icon={<RestaurantMenuIcon />}
               selected={selected}
               setSelected={setSelected}
             />
