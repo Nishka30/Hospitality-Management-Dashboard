@@ -29,6 +29,7 @@ import Audit from "./scenes/nightAudit";
 import TechAbout from "./scenes/techAbout";
 import Bot from "./scenes/botStatus";
 
+
 function App() {
 
   const [theme, colorMode] = useMode();
@@ -66,7 +67,7 @@ function App() {
               <Route path="/techAbout" element={<TechAbout/>} />
               <Route path="/userManage" element={<Team/>} />
               <Route path="/botStatus" element={<Bot/>} />
-              <Route path="/nightAudit" element={<Audit/>} />
+           
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
           </main>
