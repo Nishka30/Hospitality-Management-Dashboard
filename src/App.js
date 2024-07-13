@@ -25,6 +25,7 @@ import NewUser from "./scenes/newuser";
 import FrontDesk from "./scenes/frontdesk";
 import Feedback from "./scenes/feedback";
 import Technical from "./scenes/techsupp";
+import Audit from "./scenes/nightAudit";
 import TechAbout from "./scenes/techAbout";
 import Bot from "./scenes/botStatus";
 
@@ -65,6 +66,7 @@ function App() {
               <Route path="/techAbout" element={<TechAbout/>} />
               <Route path="/userManage" element={<Team/>} />
               <Route path="/botStatus" element={<Bot/>} />
+              <Route path="/nightAudit" element={<Audit/>} />
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
           </main>

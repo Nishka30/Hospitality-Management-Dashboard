@@ -292,7 +292,7 @@ const Sidebar = () => {
 
             <Item
               title="Night Audit"
-              to="/form"
+              to="/nightAudit"
               icon={<AssignmentTurnedInOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
