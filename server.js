@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/customerCheckin';
+const dbURI = 'mongodb+srv://shrimalinishka:Nishka3012*@cluster0.bqtqgep.mongodb.net/';
 
 mongoose.connect(dbURI, {
   useNewUrlParser: true,
@@ -44,7 +44,7 @@ const customerSchema = new mongoose.Schema({
   omsCheckin: { type: Date, required: true },
   omsCheckout: { type: Date, required: true },
   idNumber: { type: String, required: true },
-  totalGuests: { type: Number, required: true },
+  totalGuests: { type: Number, required: true }, // Added totalGuests field
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
@@ -58,13 +58,14 @@ const staffSchema = new mongoose.Schema({
   password: { type: String, required: true },
   staffAccess: { type: String, required: true },
   staffProgress: { type: String, required: true },
-  idType: { type: String, required: true },
-  idNumber: { type: String, required: true },
+  idType: { type: String, required: true }, // Added idType field
+  idNumber: { type: String, required: true }, // Added idNumber field
 });
 
 const Staff = mongoose.model('Staff', staffSchema);
 
 // API endpoints
+
 // Create new customer profile
 app.post('/api/customers', async (req, res) => {
   try {
@@ -188,4 +189,3 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-module.exports = app;
