@@ -380,7 +380,7 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="date"
-                label="OMS Check-in"
+                label="PMS Check-in"
                 InputLabelProps={{ shrink: true }}
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -394,7 +394,7 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="date"
-                label="OMS Checkout"
+                label="PMS Checkout"
                 InputLabelProps={{ shrink: true }}
                 onBlur={handleBlur}
                 onChange={handleChange}
