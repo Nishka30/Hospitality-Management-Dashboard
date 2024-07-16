@@ -11,18 +11,18 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-const dbURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/customerCheckin';
-
-mongoose.connect(dbURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+const uri = 'mongodb+srv://abpolar790:Cricket152%40@cluster0.ixryv4x.mongodb.net/';
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => {
+    console.log('Connected to MongoDB Atlas');
+})
+.catch((err) => {
+    console.error('connection error:', err);
 });
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB Atlas');
-});
 
 // Define schemas and models
 const customerSchema = new mongoose.Schema({
@@ -44,7 +44,7 @@ const customerSchema = new mongoose.Schema({
   omsCheckin: { type: Date, required: true },
   omsCheckout: { type: Date, required: true },
   idNumber: { type: String, required: true },
-  totalGuests: { type: Number, required: true },
+  totalGuests: { type: Number, required: true }, // Added totalGuests field
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
@@ -58,13 +58,14 @@ const staffSchema = new mongoose.Schema({
   password: { type: String, required: true },
   staffAccess: { type: String, required: true },
   staffProgress: { type: String, required: true },
-  idType: { type: String, required: true },
-  idNumber: { type: String, required: true },
+  idType: { type: String, required: true }, // Added idType field
+  idNumber: { type: String, required: true }, // Added idNumber field
 });
 
 const Staff = mongoose.model('Staff', staffSchema);
 
 // API endpoints
+
 // Create new customer profile
 app.post('/api/customers', async (req, res) => {
   try {
@@ -187,5 +188,3 @@ app.get('/api/totalGuests', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
-module.exports = app;
