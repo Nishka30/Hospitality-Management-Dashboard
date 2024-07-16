@@ -13,8 +13,9 @@ app.use(bodyParser.json());
 
 app.use(cors({
   origin: 'https://hospitality-management-das-git-b5ff52-nishka-shrimalis-projects.vercel.app',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // Optional, but recommended for authentication
 }));
 
 app.options('*', cors()); // Respond to all OPTIONS requests
