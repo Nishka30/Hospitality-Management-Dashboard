@@ -8,31 +8,28 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors()); // Allow all origins
 app.use(bodyParser.json());
 
+
 app.use(cors({
-  origin: 'https://hospitality-management-das-git-b5ff52-nishka-shrimalis-projects.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true // Optional, but recommended for authentication
+  origin: 'http://localhost:5001', // Allow requests from localhost:5001
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
+  credentials: true // Optional: allow cookies or authorization headers
 }));
 
 app.options('*', cors()); // Respond to all OPTIONS requests
 
-
 // MongoDB connection
 const uri = process.env.MONGODB_URI;
-mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => {
+mongoose.connect(uri)
+  .then(() => {
     console.log('Connected to MongoDB Atlas');
-})
-.catch((err) => {
-    console.error('connection error:', err);
-});
+  })
+  .catch((err) => {
+    console.error('Connection error:', err);
+  });
 
 // Define schemas and models
 const customerSchema = new mongoose.Schema({
@@ -54,7 +51,7 @@ const customerSchema = new mongoose.Schema({
   omsCheckin: { type: Date, required: true },
   omsCheckout: { type: Date, required: true },
   idNumber: { type: String, required: true },
-  totalGuests: { type: Number, required: true }, // Added totalGuests field
+  totalGuests: { type: Number, required: true }, 
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
@@ -68,8 +65,8 @@ const staffSchema = new mongoose.Schema({
   password: { type: String, required: true },
   staffAccess: { type: String, required: true },
   staffProgress: { type: String, required: true },
-  idType: { type: String, required: true }, // Added idType field
-  idNumber: { type: String, required: true }, // Added idNumber field
+  idType: { type: String, required: true }, 
+  idNumber: { type: String, required: true }, 
 });
 
 const Staff = mongoose.model('Staff', staffSchema);
