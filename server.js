@@ -11,13 +11,14 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-const corsOptions = {
-  origin: ['https://hospitality-management-das-git-b5ff52-nishka-shrimalis-projects.vercel.app'],
+app.use(cors({
+  origin: 'https://hospitality-management-das-git-b5ff52-nishka-shrimalis-projects.vercel.app',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
-};
+}));
 
-app.use(cors(corsOptions));
+app.options('*', cors()); // Respond to all OPTIONS requests
+
 
 // MongoDB connection
 const uri = process.env.MONGODB_URI;
