@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-const uri = 'mongodb+srv://abpolar790:Cricket152%40@cluster0.ixryv4x.mongodb.net/';
+const uri = process.env.MONGODB_URI;
 mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -21,9 +22,7 @@ mongoose.connect(uri, {
 })
 .catch((err) => {
     console.error('connection error:', err);
-
 });
-
 
 // Define schemas and models
 const customerSchema = new mongoose.Schema({
