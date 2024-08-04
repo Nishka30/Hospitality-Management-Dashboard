@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-const dbURI = 'mongodb+srv://shrimalinishka:Nishka3012*@cluster0.bqtqgep.mongodb.net/';
+const dbURI = 'mongodb://localhost:27017/customerCheckin';
 
 mongoose.connect(dbURI, {
   useNewUrlParser: true,
@@ -48,7 +48,7 @@ const customerSchema = new mongoose.Schema({
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
-
+//schema creation 
 const staffSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
