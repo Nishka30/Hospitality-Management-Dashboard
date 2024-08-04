@@ -66,8 +66,12 @@
       "last 1 safari version"
     ]
   },
+  "engines": {
+    "node": "20.15.1",
+    "npm": ">=6.0.0"
+  },
+  "main": "server.js",
   "description": "",
-  "main": "index.js",
   "keywords": [],
   "author": "",
   "license": "ISC"

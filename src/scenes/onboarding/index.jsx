@@ -34,7 +34,7 @@ const Form = () => {
   const fetchStaffData = async () => {
     if (id) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/staff/${id}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/staff/${id}`);
         const staff = response.data;
         setInitialValues(staff); // Set form initial values based on fetched data
       } catch (error) {
