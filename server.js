@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -8,28 +7,22 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors()); // Allow all origins
+app.use(cors());
 app.use(bodyParser.json());
 
-
-app.use(cors({
-  origin: 'http://localhost:5001', // Allow requests from localhost:5001
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
-  credentials: true // Optional: allow cookies or authorization headers
-}));
-
-app.options('*', cors()); // Respond to all OPTIONS requests
-
 // MongoDB connection
-const uri = process.env.MONGODB_URI;
-mongoose.connect(uri)
-  .then(() => {
-    console.log('Connected to MongoDB Atlas');
-  })
-  .catch((err) => {
-    console.error('Connection error:', err);
-  });
+const dbURI = 'mongodb://localhost:27017';
+
+mongoose.connect(dbURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB Atlas');
+});
 
 // Define schemas and models
 const customerSchema = new mongoose.Schema({
@@ -51,11 +44,11 @@ const customerSchema = new mongoose.Schema({
   omsCheckin: { type: Date, required: true },
   omsCheckout: { type: Date, required: true },
   idNumber: { type: String, required: true },
-  totalGuests: { type: Number, required: true }, 
+  totalGuests: { type: Number, required: true }, // Added totalGuests field
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
-
+//schema creation 
 const staffSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -65,8 +58,8 @@ const staffSchema = new mongoose.Schema({
   password: { type: String, required: true },
   staffAccess: { type: String, required: true },
   staffProgress: { type: String, required: true },
-  idType: { type: String, required: true }, 
-  idNumber: { type: String, required: true }, 
+  idType: { type: String, required: true }, // Added idType field
+  idNumber: { type: String, required: true }, // Added idNumber field
 });
 
 const Staff = mongoose.model('Staff', staffSchema);
@@ -195,3 +188,4 @@ app.get('/api/totalGuests', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+

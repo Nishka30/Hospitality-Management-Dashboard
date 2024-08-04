@@ -22,7 +22,7 @@ const Contacts = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("${process.env.REACT_APP_API_BASE_URL}/api/customers");
+      const response = await axios.get("http://localhost:5000/api/customers");
       const formattedData = response.data.map((customer) => ({
         id: customer.idNumber, // Ensure each row has a unique id based on MongoDB _id
         firstName: customer.firstName,

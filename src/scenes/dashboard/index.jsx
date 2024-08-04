@@ -30,7 +30,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTotalGuests = async () => {
       try {
-        const response = await axios.get('${process.env.REACT_APP_API_BASE_URL}/api/totalGuests');
+        const response = await axios.get('http://localhost:5000/api/totalGuests');
         const totalGuests = response.data.totalGuests;
         setTotalGuests(totalGuests);
       } catch (error) {
