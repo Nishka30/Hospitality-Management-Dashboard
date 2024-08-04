@@ -25,6 +25,8 @@ import Technical from "./scenes/techsupp";
 import Food from "./scenes/food";
 import TechAbout from "./scenes/techAbout";
 import Bot from "./scenes/botStatus";
+import Login from "./scenes/login";
+
 
 
 function App() {
@@ -65,6 +67,7 @@ function App() {
               <Route path="/userManage" element={<Team/>} />
               <Route path="/botStatus" element={<Bot/>} />
               <Route path="/food" element={<Food/>} />
+              <Route path="/login" element={<Login/>} />
            
               {/* <Route path="/geography" element={<Geography />} /> */}
             </Routes>
