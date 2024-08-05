@@ -15,6 +15,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
+
 const dbURI = 'mongodb://localhost:27017/customerCheckin';
 
 mongoose.connect(dbURI, {

@@ -10,7 +10,7 @@ const Form = () => {
 
   const handleFormSubmit = (values) => {
     axios
-      .post(`${process.env.REACT_APP_API_BASE_URL}/api/customers`, values)
+      .post("http://localhost:5000/api/customers", values)
       .then((response) => {
         alert("Customer profile saved successfully");
       })
