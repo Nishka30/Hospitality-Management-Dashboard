@@ -202,23 +202,24 @@ const FrontDesk = () => {
   
         cells.push(
           <TableCell
-            key={`${roomNumber}-${date}`}
-            colSpan={colSpan}
-            style={{
-              backgroundColor: cellColor,
-              color: '#ffffff',
-              paddingTop: '0.3px',
-              paddingBottom: '0.3px',
-              paddingLeft: '2px',
-              cursor: 'pointer',
-              borderRight: index + colSpan - 1 < dates.length ? '1px solid #e0e0e0' : 'none',
-            }}
-            onClick={() => handleOpen(occupiedCustomer)}
-          >
-            <Typography variant="body2">
-              {`${occupiedCustomer.firstName} ${occupiedCustomer.lastName}`}
-            </Typography>
-          </TableCell>
+      key={`${roomNumber}-${date}`}
+      colSpan={colSpan}
+      style={{
+        backgroundColor: cellColor,
+        color: '#ffffff',
+        paddingTop: '0.3px',
+        paddingBottom: '0.3px',
+        paddingLeft: '2px',
+        cursor: 'pointer',
+        borderRight: index + colSpan - 1 < dates.length ? '1px solid #e0e0e0' : 'none',
+      }}
+      onClick={() => handleOpen(occupiedCustomer)}
+    >
+      <Typography variant="body2" noWrap>
+        {`${occupiedCustomer.firstName} ${occupiedCustomer.lastName}`}
+      </Typography>
+    </TableCell>
+        
         );
   
         skipCount = colSpan - 1;
