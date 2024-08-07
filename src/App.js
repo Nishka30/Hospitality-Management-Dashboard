@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import Topbar from "./scenes/global/Topbar";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./scenes/global/Sidebar";
+import Topbar from "./scenes/global/Topbar";
 import Dashboard from "./scenes/dashboard";
 import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
@@ -25,32 +25,36 @@ import Technical from "./scenes/techsupp";
 import Food from "./scenes/food";
 import TechAbout from "./scenes/techAbout";
 import Bot from "./scenes/botStatus";
-import Login from "./scenes/login";
-
-
+import Add from "./scenes/addnew";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
-
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const [userName, setUserName] = useState(null); // Add userName state
+  const location = useLocation();
+
+  const noSidebarPaths = ["/login", "/register"];
+  const noTopbarPaths = ["/login", "/register"];
 
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          <Sidebar isSidebar={isSidebar} />
+          {!noSidebarPaths.includes(location.pathname) && <Sidebar isSidebar={isSidebar} />}
           <main className="content">
-            <Topbar setIsSidebar={setIsSidebar} />
+            {!noTopbarPaths.includes(location.pathname) && (
+              <Topbar userName={userName} setUserName={setUserName} />
+            )}
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-   
+              <Route path="/" element={<Navigate to="/register" />} />
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/rooms" element={<Rooms />} />
               <Route path="/guest" element={<Guests />} />
               <Route path="/form" element={<Form />} />
-              {/* <Route path="/bar" element={<Bar />} /> */}
               <Route path="/pie" element={<Pie />} />
               <Route path="/frontdesk" element={<FrontDesk />} />
               <Route path="/newuser" element={<NewUser />} />
@@ -59,17 +63,17 @@ function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/tutorials" element={<Tutorial />} />
-              <Route path="/dcumentation" element={<Documentation/>} />
-              <Route path="/feedback" element={<Feedback/>} />
-              <Route path="/techsupp" element={<Technical/>} />
-              <Route path="/documentation" element={<Documentation/>} />
-              <Route path="/techAbout" element={<TechAbout/>} />
-              <Route path="/userManage" element={<Team/>} />
-              <Route path="/botStatus" element={<Bot/>} />
-              <Route path="/food" element={<Food/>} />
-              <Route path="/login" element={<Login/>} />
-           
-              {/* <Route path="/geography" element={<Geography />} /> */}
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/feedback" element={<Feedback />} />
+              <Route path="/techsupp" element={<Technical />} />
+              <Route path="/techAbout" element={<TechAbout />} />
+              <Route path="/userManage" element={<Team />} />
+              <Route path="/botStatus" element={<Bot />} />
+              <Route path="/food" element={<Food />} />
+              <Route path="/addnew" element={<Add />} />
+              <Route path="/login" element={<Login setUserName={setUserName} />} />
+              <Route path="/register" element={<Register setUserName={setUserName} />} />
             </Routes>
           </main>
         </div>
