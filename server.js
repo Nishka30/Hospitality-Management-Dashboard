@@ -2,20 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-const secretKey = process.env.SECRET_KEY; // Define secretKey here
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-
 const dbURI = 'mongodb://localhost:27017/customerCheckin';
 
 mongoose.connect(dbURI, {
@@ -26,7 +21,7 @@ mongoose.connect(dbURI, {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
-  console.log('Connected to MongoDB');
+  console.log('Connected to MongoDB Atlas');
 });
 
 // Define schemas and models
@@ -53,9 +48,8 @@ const customerSchema = new mongoose.Schema({
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
-
+//schema creation 
 const staffSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true }, // Changed to username
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
@@ -125,9 +119,7 @@ app.post('/api/bookings', async (req, res) => {
 // Create new staff profile
 app.post('/api/staff', async (req, res) => {
   try {
-    const { username, password, ...rest } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newStaff = new Staff({ username, password: hashedPassword, ...rest });
+    const newStaff = new Staff(req.body);
     await newStaff.save();
     res.status(201).send('Staff profile saved successfully');
   } catch (error) {
@@ -140,12 +132,7 @@ app.post('/api/staff', async (req, res) => {
 app.put('/api/staff/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { password, ...rest } = req.body;
-    const updatedStaff = await Staff.findByIdAndUpdate(id, rest, { new: true, runValidators: true });
-    if (password) {
-      updatedStaff.password = await bcrypt.hash(password, 10);
-      await updatedStaff.save();
-    }
+    const updatedStaff = await Staff.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
     if (!updatedStaff) {
       return res.status(404).send('Staff not found');
     }
@@ -197,44 +184,8 @@ app.get('/api/totalGuests', async (req, res) => {
   }
 });
 
-// Login endpoint
-app.post('/api/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const user = await Staff.findOne({ username });
-    if (!user) {
-      return res.status(400).send('Invalid credentials');
-    }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).send('Invalid credentials');
-    }
-    const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '1h' });
-    res.json({ token });
-  } catch (error) {
-    console.error('Error during login:', error.message);
-    res.status(500).send('Error during login: ' + error.message);
-  }
-});
-
-// Middleware to verify JWT token
-const authenticateToken = (req, res, next) => {
-  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
-  if (token == null) return res.sendStatus(401);
-  
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-};
-
-// Example of a protected route
-app.get('/api/protected', authenticateToken, (req, res) => {
-  res.send('This is a protected route');
-});
-
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
