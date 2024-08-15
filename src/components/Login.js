@@ -1,7 +1,7 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import { login } from '../auth';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate and Link
 import './Login.css'; // Import the CSS file for styling
 
 const Login = () => {
@@ -44,8 +44,12 @@ const Login = () => {
             className="form-control"
           />
         </div>
-        <button type="submit" className="btn btn-primary">Login</button>
+        <button type="submit" className="btn btn-primary">LOGIN</button>
+        
+        <p>Don't have an account? <Link to="/register" className="btn btn-primary login-link">REGISTER</Link></p>
+      
       </form>
+      
     </div>
   );
 };

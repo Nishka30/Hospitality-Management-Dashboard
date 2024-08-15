@@ -1,55 +1,101 @@
 /* src/components/Login.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
 .login-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh; /* Full viewport height */
-    background-color: #f8f9fa; /* Light background color */
+    height: 100vh;
+    background: linear-gradient(135deg, #8e44ad, #3498db);
+    background-size: 200% 200%;
+    animation: gradientAnimation 8s ease infinite;
     padding: 20px;
-  }
-  
-  .login-form {
-    background: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-form {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    padding: 40px 30px;
+    width: 350px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.login-form:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #34495e;
+    display: block;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+input.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ced4da;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    padding: 20px;
-    width: 300px; /* Fixed width for form */
-  }
-  
-  .form-group {
-    margin-bottom: 15px; /* Spacing between form fields */
-  }
-  
-  label {
-    font-weight: bold; /* Bold labels */
-  }
-  
-  input.form-control {
-    width: 100%; /* Full width input */
-    padding: 10px; /* Padding inside input */
-    border: 1px solid #ced4da; /* Light border */
-    border-radius: 4px; /* Rounded corners */
-    transition: border-color 0.3s; /* Smooth transition */
-  }
-  
-  input.form-control:focus {
-    border-color: #007bff; /* Change border color on focus */
-    outline: none; /* Remove default outline */
-  }
-  
-  .btn {
-    width: 100%; /* Full width button */
-    padding: 10px; /* Padding inside button */
-    background-color: #007bff; /* Primary color */
-    color: white; /* Text color */
-    border: none; /* Remove border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    transition: background-color 0.3s; /* Smooth transition */
-  }
-  
-  .btn:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-  }
-  
+    background: #ecf0f1;
+    font-size: 14px;
+    transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+}
+
+input.form-control:focus {
+    border-color: #9b59b6;
+    background-color: #ffffff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(155, 89, 182, 0.2);
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #9b59b6;
+    background-image: linear-gradient(45deg, #9b59b6, #3498db);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+.btn:hover {
+    background-color: #8e44ad;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.register-link {
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+@media (max-width: 480px) {
+    .login-form {
+        width: 90%;
+        padding: 30px 20px;
+    }
+}
