@@ -1,4 +1,4 @@
-/* src/components/Register.css */
+/* 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 .register-container {
@@ -66,14 +66,14 @@ input.form-control:focus, select.form-control:focus {
 }
 
 select.form-control {
-    height: 46px; /* Set height to match input fields */
-    appearance: none; /* Remove default dropdown arrow */
-    padding-right: 30px; /* Ensure padding is sufficient */
-    background: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center/15px 15px; /* Custom dropdown arrow */
+    height: 46px; 
+    appearance: none; 
+    padding-right: 30px; 
+    background: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center/15px 15px; 
 }
 
 select.form-control option {
-    background: white; /* Ensure dropdown options match background */
+    background: white; 
     color: #34495e;
 }
 
@@ -114,4 +114,4 @@ select.form-control option {
         width: 90%;
         padding: 30px 20px;
     }
-}
+} */
